@@ -11,6 +11,16 @@ Object.keys(baseWebpackConfig.entry).forEach(function (name) {
   baseWebpackConfig.entry[name] = ['./build/dev-client'].concat(baseWebpackConfig.entry[name])
 })
 
+var pluginTarget = Object.keys(baseWebpackConfig.entry).map(function (name) {
+  // https://github.com/ampedandwired/html-webpack-plugin
+  return new HtmlWebpackPlugin({
+    filename: name + '.html',
+    template: 'index.html',
+    chunks: [name],
+    inject: true
+  });
+});
+
 module.exports = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap })
@@ -24,12 +34,6 @@ module.exports = merge(baseWebpackConfig, {
     // https://github.com/glenjamin/webpack-hot-middleware#installation--usage
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    // https://github.com/ampedandwired/html-webpack-plugin
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: 'index.html',
-      inject: true
-    }),
     new FriendlyErrorsPlugin()
-  ]
+  ].concat(pluginTarget)
 })
